@@ -12,9 +12,15 @@ import ApiError from "../utils/ApiError.js";
 // @access Public
 
 export const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find()
-    .populate("category", "name")
-    .sort({ createdAt: -1 });
+  const filter = {};
+
+if (req.query.featured === "true") {
+  filter.isFeatured = true;
+}
+
+const products = await Product.find(filter)
+  .populate("category", "name")
+  .sort({ createdAt: -1 });
 
   res.status(200).json(
     new ApiResponse(

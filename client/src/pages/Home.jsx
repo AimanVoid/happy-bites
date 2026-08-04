@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getCategories } from "../services/categoryService";
+import Hero from "../components/home/Hero";
 
 const Home = () => {
   const [categories, setCategories] = useState([]);
@@ -23,10 +24,10 @@ const Home = () => {
   }, []);
 
   return (
+    <>
+    <Hero />
     <div className="max-w-7xl mx-auto p-6">
-      <h1 className="text-4xl font-bold mb-8 text-center">
-        Happy Bites 🍔
-      </h1>
+      
 
       <h2 className="text-2xl font-semibold mb-6">
         Categories
@@ -55,6 +56,7 @@ const Home = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 
