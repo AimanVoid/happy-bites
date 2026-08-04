@@ -12,19 +12,28 @@ import ApiError from "../utils/ApiError.js";
 // @access Public
 
 export const getProducts = asyncHandler(async (req, res) => {
+  const { featured, bestSeller, search } = req.query;
+
   const filter = {};
 
-if (req.query.featured === "true") {
-  filter.isFeatured = true;
-}
+  if (featured === "true") {
+    filter.isFeatured = true;
+  }
 
-if (req.query.bestSeller === "true") {
-  filter.isBestSeller = true;
-}
+  if (bestSeller === "true") {
+    filter.isBestSeller = true;
+  }
 
-const products = await Product.find(filter)
-  .populate("category", "name")
-  .sort({ createdAt: -1 });
+  if (search) {
+    filter.name = {
+      $regex: search,
+      $options: "i",
+    };
+  }
+
+  const products = await Product.find(filter)
+    .populate("category", "name")
+    .sort({ createdAt: -1 });
 
   res.status(200).json(
     new ApiResponse(
