@@ -72,3 +72,110 @@ export const createProduct = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(201, product, "Product created successfully"));
 });
+
+
+
+
+
+// @desc Get single product
+// @route GET /api/products/:id
+// @access Public
+
+export const getProductById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const product = await Product.findById(id).populate("category", "name");
+
+  if (!product) {
+    throw new ApiError(404, "Product not found");
+  }
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      product,
+      "Product fetched successfully"
+    )
+  );
+});
+
+
+// @desc Update Product
+// @route PUT /api/products/:id
+// @access Admin (abhi Public)
+
+export const updateProduct = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const product = await Product.findById(id);
+
+  if (!product) {
+    throw new ApiError(404, "Product not found");
+  }
+
+  const {
+    name,
+    price,
+    description,
+    category,
+    stock,
+    images,
+    ingredients,
+    isFeatured,
+    isBestSeller,
+  } = req.body;
+
+  // Agar category update ho rahi hai to verify bhi karo
+  if (category) {
+    const existingCategory = await Category.findById(category);
+
+    if (!existingCategory) {
+      throw new ApiError(404, "Category not found");
+    }
+  }
+
+  product.name = name ?? product.name;
+  product.price = price ?? product.price;
+  product.description = description ?? product.description;
+  product.category = category ?? product.category;
+  product.stock = stock ?? product.stock;
+  product.images = images ?? product.images;
+  product.ingredients = ingredients ?? product.ingredients;
+  product.isFeatured = isFeatured ?? product.isFeatured;
+  product.isBestSeller = isBestSeller ?? product.isBestSeller;
+
+  const updatedProduct = await product.save();
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      updatedProduct,
+      "Product updated successfully"
+    )
+  );
+});
+
+
+// @desc Delete Product
+// @route DELETE /api/products/:id
+// @access Admin (abhi Public)
+
+export const deleteProduct = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const product = await Product.findById(id);
+
+  if (!product) {
+    throw new ApiError(404, "Product not found");
+  }
+
+  await product.deleteOne();
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      null,
+      "Product deleted successfully"
+    )
+  );
+});
