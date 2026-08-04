@@ -6,13 +6,28 @@ import ProductGrid from "../components/shop/ProductGrid";
 
 import SearchBar from "../components/shop/SearchBar";
 
+import CategoryFilter from "../components/shop/CategoryFilter";
+
 const Shop = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const fetchProducts = async () => {
     try {
-      const response = await getProducts({ search });
+
+      const params = {};
+
+if (search.trim()) {
+  params.search = search;
+}
+
+if (selectedCategory) {
+  params.category = selectedCategory;
+}
+
+
+      const response = await getProducts({ search, category: selectedCategory });
       setProducts(response.data);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -25,7 +40,7 @@ const Shop = () => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
   fetchProducts();
   
-}, [search]);
+}, [search, selectedCategory]);
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
@@ -37,6 +52,12 @@ const Shop = () => {
       <SearchBar
   search={search}
   setSearch={setSearch}
+/>
+
+
+<CategoryFilter
+  selectedCategory={selectedCategory}
+  setSelectedCategory={setSelectedCategory}
 />
 
       <ProductGrid
