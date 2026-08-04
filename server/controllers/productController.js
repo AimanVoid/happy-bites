@@ -18,6 +18,10 @@ if (req.query.featured === "true") {
   filter.isFeatured = true;
 }
 
+if (req.query.bestSeller === "true") {
+  filter.isBestSeller = true;
+}
+
 const products = await Product.find(filter)
   .populate("category", "name")
   .sort({ createdAt: -1 });
