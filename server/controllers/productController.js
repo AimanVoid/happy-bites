@@ -12,7 +12,7 @@ import ApiError from "../utils/ApiError.js";
 // @access Public
 
 export const getProducts = asyncHandler(async (req, res) => {
-  const { featured, bestSeller, search } = req.query;
+  const { featured, bestSeller, search, category } = req.query;
 
   const filter = {};
 
@@ -30,6 +30,16 @@ export const getProducts = asyncHandler(async (req, res) => {
       $options: "i",
     };
   }
+
+  if (category) {
+  const existingCategory = await Category.findOne({
+    name: category,
+  });
+
+  if (existingCategory) {
+    filter.category = existingCategory._id;
+  }
+}
 
   const products = await Product.find(filter)
     .populate("category", "name")
